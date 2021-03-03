@@ -1,5 +1,6 @@
 package org.geektimes.projects.user.domain;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -7,7 +8,7 @@ import java.util.Objects;
  *
  * @since 1.0
  */
-public class User {
+public class User implements Serializable {
 
     private Long id;
 

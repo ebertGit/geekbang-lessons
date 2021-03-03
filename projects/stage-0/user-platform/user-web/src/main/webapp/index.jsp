@@ -8,4 +8,8 @@
 		<!-- Content here -->
 		Hello,World 2021
 	</div>
+
+	<div class="container">
+	    <p><a href="/register">前往注册页面</a></p>
+	</div>
 </body>

@@ -34,4 +34,6 @@ public interface UserService {
     User queryUserById(Long id);
 
     User queryUserByNameAndPassword(String name, String password);
+
+    public boolean emailExisted(String email);
 }

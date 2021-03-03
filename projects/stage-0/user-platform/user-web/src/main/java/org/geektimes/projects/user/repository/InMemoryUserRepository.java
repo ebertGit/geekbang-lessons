@@ -15,8 +15,9 @@ public class InMemoryUserRepository implements UserRepository {
     private Map<Long, User> repository = new ConcurrentHashMap<>();
 
     @Override
-    public boolean save(User user) {
-        return repository.put(user.getId(), user) == null;
+    public int save(User user) {
+        // repository.put(user.getId(), user) == null
+        return 0;
     }
 
     @Override
@@ -48,5 +49,10 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public Collection<User> getAll() {
         return repository.values();
+    }
+
+    @Override
+    public boolean emailExisted(String email) {
+        return false;
     }
 }
