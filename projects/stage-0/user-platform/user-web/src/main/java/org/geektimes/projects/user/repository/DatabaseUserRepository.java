@@ -104,10 +104,10 @@ public class DatabaseUserRepository implements UserRepository {
 
     @Override
     public boolean emailExisted(String email) {
-        int count = executeQuery("SELECTE COUNT(*) FROM users WHERE email=?",
-                resultSet -> {
-                    return resultSet.getInt(1);
-                },COMMON_EXCEPTION_HANDLER, email);
+        int count = executeQuery("SELECT COUNT(*) FROM users WHERE email=?",
+                resultSet -> resultSet.getInt(1),
+                COMMON_EXCEPTION_HANDLER, email);
+        System.out.println("count: " + count);
         return count > 0 ? true : false;
     }
 

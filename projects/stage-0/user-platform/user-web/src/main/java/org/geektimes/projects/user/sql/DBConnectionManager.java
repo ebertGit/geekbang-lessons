@@ -22,10 +22,11 @@ public class DBConnectionManager {
 
     public Connection getConnection() {
         if (this.connection == null) {
-            String databaseURL = "jdbc:derby:user-platform";
+            String databaseURL = "jdbc:derby:db/user-platform";
             try {
                 this.connection = DriverManager.getConnection(databaseURL);
-            } catch (SQLException throwables) {
+            } catch (SQLException e) {
+                e.printStackTrace();
                 this.connection = null;
             }
         }
@@ -57,7 +58,7 @@ public class DBConnectionManager {
             "('B','******','b@gmail.com','2') , " +
             "('C','******','c@gmail.com','3') , " +
             "('D','******','d@gmail.com','4') , " +
-            "('E','******','e@gmail.com','5')";
+            "('EE','******','e@gmail.com','5')";
 
 
     public static void main(String[] args) throws Exception {
@@ -68,7 +69,8 @@ public class DBConnectionManager {
 //        Driver driver = DriverManager.getDriver("jdbc:derby:/db/user-platform;create=true");
 //        Connection connection = driver.connect("jdbc:derby:/db/user-platform;create=true", new Properties());
 
-        String databaseURL = "jdbc:derby:user-platform;create=true";
+//        String databaseURL = "jdbc:derby:db/user-platform;create=true";
+        String databaseURL = "jdbc:derby:db/user-platform";
         Connection connection = DriverManager.getConnection(databaseURL);
 
         Statement statement = connection.createStatement();

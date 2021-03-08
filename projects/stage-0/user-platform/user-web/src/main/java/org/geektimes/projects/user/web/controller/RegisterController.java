@@ -11,10 +11,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
 
 public class RegisterController implements PageController {
 
@@ -24,13 +20,14 @@ public class RegisterController implements PageController {
     @Path("/register")
     public String execute(HttpServletRequest request, HttpServletResponse response) throws Throwable {
 
-        if (HttpMethod.GET == request.getMethod()) {
+        if (HttpMethod.GET.equals(request.getMethod())) {
             return "register.jsp";
         }
 
         String email = request.getParameter("email");
         // 校验邮箱是否已经存在
         if (this.userService.emailExisted(email)) {
+            System.out.println("邮箱已经存在");
             request.setAttribute("email_existed", true);
             return "register.jsp";
         }
@@ -48,7 +45,6 @@ public class RegisterController implements PageController {
         }
 
         request.setAttribute("userInfo", user);
-//        request.setAttribute("text","text content from controller.");
 
         return "register-success.jsp";
     }
