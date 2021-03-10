@@ -1,5 +1,6 @@
 package org.geektimes.projects.user.sql;
 
+import org.apache.derby.jdbc.EmbeddedDriver;
 import org.geektimes.projects.user.domain.User;
 
 import java.beans.BeanInfo;
@@ -62,12 +63,32 @@ public class DBConnectionManager {
 
 
     public static void main(String[] args) throws Exception {
+        // Ways to register a JDBC Driver
+        // http://javagraduates.blogspot.com/2012/11/ways-to-register-jdbc-driver.html
+
+        // 1. Using DriverManager.registerDriver():
+//        DriverManager.registerDriver(new EmbeddedDriver());
+
+        // 2. Using Class.forName():
 //        通过 ClassLoader 加载 java.sql.DriverManager -> static 模块 {}
 //        DriverManager.setLogWriter(new PrintWriter(System.out));
 //
 //        Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
 //        Driver driver = DriverManager.getDriver("jdbc:derby:/db/user-platform;create=true");
 //        Connection connection = driver.connect("jdbc:derby:/db/user-platform;create=true", new Properties());
+
+        // 3. Using Predefined System Property-"jdbc.drivers":
+        // In command prompt to execute: java -Djdbc.drivers=org.apache.derby.jdbc.EmbeddedDriver DBConnectionManager
+        // In java as below:
+//        Connection connection = DriverManager.getConnection("url", "user", "password");
+
+        // 4. JDBC 4.0 Auto Loading of the JDBC Driver:
+        // JDK 1.6以降の環境に、JDBC 4.0が含まれている
+        // JDBC 4.0からは、アプリケーションがドライバ名を引数にとってClass.forName()を呼ぶ必要はありません。
+        // 代わりにアプリケーションが接続を要求したときに、DriverManagerが適切なJDBCドライバを探します。
+
+        // Derby への接続方法
+        // https://db.apache.org/derby/docs/10.4/ja_JP/ref/rrefjdbc32052.html
 
 //        String databaseURL = "jdbc:derby:db/user-platform;create=true";
         String databaseURL = "jdbc:derby:db/user-platform";
