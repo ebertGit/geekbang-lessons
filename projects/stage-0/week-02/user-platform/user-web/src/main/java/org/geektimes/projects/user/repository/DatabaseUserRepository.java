@@ -43,8 +43,9 @@ public class DatabaseUserRepository implements UserRepository {
     }
 
     @Override
-    public boolean save(User user) {
-        return false;
+    public int save(User user) {
+        return executeUpdate(INSERT_USER_DML_SQL, COMMON_EXCEPTION_HANDLER,
+                user.getName(), user.getPassword(), user.getEmail(), user.getPhoneNumber());
     }
 
     @Override
@@ -102,6 +103,15 @@ public class DatabaseUserRepository implements UserRepository {
         });
     }
 
+    @Override
+    public boolean isEmailExisted(String email) {
+        int count = executeQuery("SELECT COUNT(*) FROM users WHERE email=?",
+                resultSet -> resultSet.getInt(1),
+                COMMON_EXCEPTION_HANDLER, email);
+        System.out.println("count: " + count);
+        return count > 0 ? true : false;
+    }
+
     /**
      * @param sql
      * @param function
@@ -138,6 +148,39 @@ public class DatabaseUserRepository implements UserRepository {
         return null;
     }
 
+    /**
+     * 执行sql(DML)语句
+     * @param sql
+     * @param exceptionHandler
+     * @param args
+     * @return
+     */
+    protected int executeUpdate(String sql, Consumer<Throwable> exceptionHandler, Object... args) {
+        Connection connection = getConnection();
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            // 设置sql中的参数值
+            for (int i = 0; i < args.length; i++) {
+                Object arg = args[i];
+
+                Class argType = arg.getClass();
+                Class primitiveType = wrapperToPrimitive(argType);
+                if (primitiveType == null) {
+                    primitiveType = argType;
+                }
+
+                String methodName = preparedStatementMethodMappings.get(argType);
+                Method method = PreparedStatement.class.getMethod(methodName, primitiveType);
+                method.invoke(preparedStatement, i + 1, arg);
+            }
+            // 执行sql语句，并返回执行结果
+            return preparedStatement.executeUpdate();
+        } catch (Throwable e) {
+            exceptionHandler.accept(e);
+        }
+        return 0;
+    }
 
     private static String mapColumnLabel(String fieldName) {
         return fieldName;

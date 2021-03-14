@@ -16,6 +16,7 @@ public class BeanValidationDemo {
         Validator validator = factory.getValidator();
 
         User user = new User();
+//        user.setId(9L);
         user.setPassword("***");
 
         // 校验结果

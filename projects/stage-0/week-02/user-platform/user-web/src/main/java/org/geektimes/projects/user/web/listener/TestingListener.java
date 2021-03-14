@@ -34,7 +34,7 @@ public class TestingListener implements ServletContextListener {
         user.setName("小马哥");
         user.setPassword("*********");
         user.setEmail("mercyblitz@gmail.com");
-        user.setPhoneNumber("abcdefg");
+        user.setPhoneNumber("12345678901");
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
         entityManager.persist(user);

@@ -2,6 +2,7 @@ package org.geektimes.context;
 
 import org.geektimes.function.ThrowableAction;
 import org.geektimes.function.ThrowableFunction;
+import org.geektimes.web.mvc.ioc.IocComponentContext;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -39,7 +40,7 @@ public class ComponentContext {
 
     private ClassLoader classLoader;
 
-    private Map<String, Object> componentsMap = new LinkedHashMap<>();
+    private Map<String, Object> componentsMap = IocComponentContext.getComponentsMap();
 
     /**
      * 获取 ComponentContext
@@ -222,7 +223,7 @@ public class ComponentContext {
                     // 如果当前名称是目录（Context 实现类）的话，递归查找
                     fullNames.addAll(listComponentNames(element.getName()));
                 } else {
-                    // 否则，当前名称绑定目标类型的话话，添加该名称到集合中
+                    // 否则，当前名称绑定目标类型的话，添加该名称到集合中
                     String fullName = name.startsWith("/") ?
                             element.getName() : name + "/" + element.getName();
                     fullNames.add(fullName);
@@ -243,11 +244,48 @@ public class ComponentContext {
         Context context = null;
         try {
             context = new InitialContext();
+
+//            // debug
+//            Context ctx = (Context) context.lookup("java:");
+//            printContext(ctx, "/");
+
             this.envContext = (Context) context.lookup(COMPONENT_ENV_CONTEXT_NAME);
+            // debug
+            printContext(this.envContext, "/");
         } catch (NamingException e) {
             throw new RuntimeException(e);
         } finally {
             close(context);
+        }
+    }
+
+    /**
+     * debug
+     * <br>Print out all of the context.
+     * @param context
+     * @param name
+     */
+    private void printContext(Context context, String name) {
+        try {
+            NamingEnumeration list = context.list(name);
+
+            while (list.hasMore()) {
+                NameClassPair nc = (NameClassPair)list.next();
+                System.out.print("NameClassPair [" + nc + "].");
+
+                Class<?> klass = classLoader.loadClass(nc.getClassName());
+                String fullName = name.startsWith("/") ?
+                        nc.getName() : name + "/" + nc.getName();
+                if (Context.class.isAssignableFrom(klass)) {
+                    System.out.println(" Is Context. " + fullName);
+                    printContext(context, fullName);
+                } else {
+                    System.out.println(" Is Class. " + fullName);
+                }
+            }
+
+        } catch (NamingException | ClassNotFoundException e) {
+            e.printStackTrace();
         }
     }
 }

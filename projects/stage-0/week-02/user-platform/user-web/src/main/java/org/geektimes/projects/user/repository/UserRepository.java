@@ -3,7 +3,6 @@ package org.geektimes.projects.user.repository;
 import org.geektimes.projects.user.domain.User;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * 用户存储仓库
@@ -12,7 +11,7 @@ import java.util.List;
  */
 public interface UserRepository {
 
-    boolean save(User user);
+    int save(User user);
 
     boolean deleteById(Long userId);
 
@@ -23,4 +22,6 @@ public interface UserRepository {
     User getByNameAndPassword(String userName, String password);
 
     Collection<User> getAll();
+
+    boolean isEmailExisted(String email);
 }

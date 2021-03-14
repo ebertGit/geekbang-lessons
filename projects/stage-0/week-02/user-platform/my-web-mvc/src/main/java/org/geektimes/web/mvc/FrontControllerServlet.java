@@ -6,6 +6,7 @@ import org.geektimes.web.mvc.controller.PageController;
 import org.geektimes.web.mvc.controller.RestController;
 import org.geektimes.web.mvc.header.CacheControlHeaderWriter;
 import org.geektimes.web.mvc.header.annotation.CacheControl;
+import org.geektimes.web.mvc.ioc.IocComponentContext;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
@@ -53,23 +54,27 @@ public class FrontControllerServlet extends HttpServlet {
      * 利用 ServiceLoader 技术（Java SPI）
      */
     private void initHandleMethods() {
-        for (Controller controller : ServiceLoader.load(Controller.class)) {
-            Class<?> controllerClass = controller.getClass();
-            Path pathFromClass = controllerClass.getAnnotation(Path.class);
-            String requestPath = pathFromClass.value();
-            Method[] publicMethods = controllerClass.getMethods();
-            // 处理方法支持的 HTTP 方法集合
-            for (Method method : publicMethods) {
-                Set<String> supportedHttpMethods = findSupportedHttpMethods(method);
-                Path pathFromMethod = method.getAnnotation(Path.class);
-                if (pathFromMethod != null) {
-                    requestPath += pathFromMethod.value();
+//        for (Controller controller : ServiceLoader.load(Controller.class)) {
+        IocComponentContext.getComponentsMap().forEach((k, v) -> {
+            if (k.startsWith("controller")) {
+                Class<?> controllerClass = v.getClass();
+                Path pathFromClass = controllerClass.getAnnotation(Path.class);
+                String requestPath = pathFromClass == null ? "" : pathFromClass.value();
+                Method[] publicMethods = controllerClass.getMethods();
+                // 处理方法支持的 HTTP 方法集合
+                for (Method method : publicMethods) {
+                    Set<String> supportedHttpMethods = findSupportedHttpMethods(method);
+                    Path pathFromMethod = method.getAnnotation(Path.class);
+                    if (pathFromMethod != null) {
+                        requestPath += pathFromMethod.value();
+                        handleMethodInfoMapping.put(requestPath,
+                                new HandlerMethodInfo(requestPath, method, supportedHttpMethods));
+                    }
                 }
-                handleMethodInfoMapping.put(requestPath,
-                        new HandlerMethodInfo(requestPath, method, supportedHttpMethods));
+                controllersMapping.put(requestPath, (Controller) v);
             }
-            controllersMapping.put(requestPath, controller);
-        }
+        });
+
     }
 
     /**

@@ -41,8 +41,23 @@
 			  type="org.geektimes.projects.user.validator.bean.validation.DelegatingValidator"
 			  factory="org.apache.naming.factory.BeanFactory" />
 
-	<Resource name="bean/UserService" auth="Container"
+	<!-- Service -->
+	<Resource name="service/UserService" auth="Container"
 			  type="org.geektimes.projects.user.service.UserServiceImpl"
+			  factory="org.apache.naming.factory.BeanFactory" />
+
+	<!-- Controller -->
+	<Resource name="controller/HelloWorldController" auth="Container"
+			  type="org.geektimes.projects.user.web.controller.HelloWorldController"
+			  factory="org.apache.naming.factory.BeanFactory" />
+
+	<Resource name="controller/RegisterController" auth="Container"
+			  type="org.geektimes.projects.user.web.controller.RegisterController"
+			  factory="org.apache.naming.factory.BeanFactory" />
+
+	<!-- Validation -->
+	<Resource name="valid/ValidResult" auth="Container"
+			  type="org.geektimes.projects.user.validator.bean.validation.ValidResult"
 			  factory="org.apache.naming.factory.BeanFactory" />
 
 </Context>
