@@ -29,18 +29,25 @@ public class DelegatingEntityManager implements EntityManager {
 
     private EntityManagerFactory entityManagerFactory;
 
+    private EntityManager entityManager;
+
     @PostConstruct
     public void init() {
         this.entityManagerFactory =
                 Persistence.createEntityManagerFactory(persistenceUnitName, loadProperties(propertiesLocation));
+        this.entityManager = entityManagerFactory.createEntityManager();
     }
 
     /**
      * 如果存在多态的情况，尽可能保持方法是 protected
+     *
      * @return
      */
-    protected EntityManager getEntityManager(){ // 每个线程获取的 EntityManager 实例，原型实例
-        return entityManagerFactory.createEntityManager();
+    protected EntityManager getEntityManager() { // 每个线程获取的 EntityManager 实例，原型实例
+        // 因为这种写法，TestingListener.java 在执行 #testUser 函数时无法将数据登入DB。
+        // 原因未知，确认中。
+//        return entityManagerFactory.createEntityManager();
+        return this.entityManager;
     }
 
     // 假设子类
