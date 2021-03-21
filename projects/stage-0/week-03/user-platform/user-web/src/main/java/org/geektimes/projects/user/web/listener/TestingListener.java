@@ -6,9 +6,13 @@ import org.geektimes.projects.user.sql.DBConnectionManager;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.persistence.Query;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
 import java.util.logging.Logger;
 
 /**
@@ -45,11 +49,37 @@ public class TestingListener implements ServletContextListener {
     }
 
     private void testUser(EntityManager entityManager) {
+        String CREATE_USERS_TABLE_DDL_SQL = "CREATE TABLE users(" +
+                "id INT NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), " +
+                "name VARCHAR(16) NOT NULL, " +
+                "password VARCHAR(64) NOT NULL, " +
+                "email VARCHAR(64) NOT NULL, " +
+                "phoneNumber VARCHAR(64) NOT NULL" +
+                ")";
+
         User user = new User();
         user.setName("小马哥");
         user.setPassword("******");
         user.setEmail("mercyblitz@gmail.com");
         user.setPhoneNumber("abcdefg");
+        try {
+            entityManager.find(User.class, 1L);
+        } catch (Exception e) {
+            logger.warning(e.getMessage());
+            logger.warning("Create Table (users).");
+            try {
+                String databaseURL = "jdbc:derby:db/user-platform;create=true";
+                Connection connection = DriverManager.getConnection(databaseURL);
+
+                Statement statement = connection.createStatement();
+                statement.execute(CREATE_USERS_TABLE_DDL_SQL);
+                logger.info("Table created!");
+            } catch (Exception ex) {
+                logger.warning(ex.getMessage());
+                ex.printStackTrace();
+                return;
+            }
+        }
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
         entityManager.persist(user);
